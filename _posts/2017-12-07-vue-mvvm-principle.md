@@ -1,15 +1,32 @@
-# 特此说明~~注意看：
-## 1) 本文主要分析vue作为一个MVVM框架的基本实现原理
-         数据代理
-         模板解析
-		 数据绑定
-## 2) 不直接看vue.js的源码
-## 3) 剖析github上某基友仿vue实现的mvvm库
-## 4) 地址: [https://github.com/DMQ/mvvm](https://github.com/DMQ/mvvm)
+---
+layout: post
+title:  "分析Vue的基本实现原理"
+categories: Vue
+tags:  Vue 数据代理  模板解析 数据绑定
+author: TY
+---
+
+* content
+{:toc}
+特此说明~~注意看：本文主要分析vue作为一个MVVM框架的基本实现原理
+
+
+#### 1) 本文主要分析vue作为一个MVVM框架的基本实现原理
+  - 数据代理
+  - 模板解析
+  - 数据绑定
+
+#### 2) 不直接看vue.js的源码
+#### 3) 剖析github上某基友仿vue实现的mvvm库
+#### 4) 地址: [https://github.com/DMQ/mvvm](https://github.com/DMQ/mvvm)
+
+
+
+
+
 # 准备知识
 ## 1) [].slice.call(lis): 将伪数组转换为真数组(新数组)
 * 案例：
-
 ```
 // 1. [].slice.call(lis): 将伪数组转换为真数组(或者用from)
 //伪数组（对象，length和数组下标属性）
@@ -22,7 +39,6 @@ const lis2=Array.prototype.slice.call(lis)
 console.log(lis2 instanceof Array,lis2.forEach,lis2)
 ```
 ## 2) node.nodeType: 得到节点类型
-
 ```
 2. node.nodeType: 得到节点类型
 //元素---1    属性----2   文本(标签中的value)----3  注释---8  文档----9
@@ -106,10 +122,10 @@ ul.appendChild(fragment)
 ```
 
 # 一、数据代理
-## 1) 数据代理: 通过一个对象代理对另一个对象(在前一个对象内部)中属性的操作(读/写)
-## 2) vue数据代理: 通过vm对象来代理data对象中所有属性的操作
-## 3) 好处: 更方便的操作data中的数据
-## 4) 基本实现流程
+### 1) 数据代理: 通过一个对象代理对另一个对象(在前一个对象内部)中属性的操作(读/写)
+### 2) vue数据代理: 通过vm对象来代理data对象中所有属性的操作
+### 3) 好处: 更方便的操作data中的数据
+### 4) 基本实现流程
 * 通过Object.defineProperty()给vm添加与data对象的属性对应的属性描述符
 * 所有添加的属性都包含getter/setter
 * getter/setter内部去操作data中对应的属性数据
@@ -156,16 +172,19 @@ ul.appendChild(fragment)
 	* 对元素节点的指令属性进行解析
 	* 事件指令解析
 	* 一般指令解析
-* 3)         将解析后的 fragment 添加到 el 中显示
+* 3)将解析后的 fragment 添加到 el 中显示
+
 ## 2. 模板解析(1): 大括号表达式解析
 * 1)根据正则对象得到匹配出的表达式字符串: 子匹配/RegExp.$1  name
 * 2)从data中取出表达式对应的属性值
 * 3)将属性值设置为文本节点的textContent
+
 ## 3. 模板解析(2): 事件指令解析
 * 1)从指令名中取出事件名
 * 2)根据指令的值(表达式)从methods中得到对应的事件处理函数对象
 * 3)给当前元素节点绑定指定事件名和回调函数的dom事件监听
 * 4)指令解析完后, 移除此指令属性
+
 ## 4. 模板解析(3): 一般指令解析
 * 1)得到指令名和指令值(表达式)   text/html/class  msg/myClass
 * 2)从data中根据表达式得到对应的值
@@ -176,7 +195,7 @@ ul.appendChild(fragment)
 * 4)将得到的表达式的值设置到对应的属性上
 * 5)移除元素的指令属性
 
-## #mvvm.js vm源码解析：
+## mvvm.js vm源码解析：
 
 ```
 function MVVM(options) {//相当于Vue的构造函数
@@ -666,15 +685,18 @@ Watcher.prototype = {
 	* c. 数据绑定使用到2个核心技术
     	* defineProperty()
         * 消息订阅与发布
+
 # dep与watcher分析
 ## watcher对象
 * 什么时候创建?: 解析完一个指令(非事件)/大括号表达式
 * 与谁对应?: 与模板中的表达式(指令/大括号表达式)一一对应
 * 创建多少个? 模板中表达式的个数
+
 ## dep对象
 * 什么时候创建? 在对data中的属性进行劫持前创建
 * 与谁对应?  与data中的属性一一对应
 * 创建多少个?  data中所有层次属性的个数
+
 ##dep与watcher之间的关系
 * dep(1): watcher(n): 
 	多个表达式用到同一个属性
@@ -682,8 +704,10 @@ Watcher.prototype = {
 * watcher(1): dep(n): 
 	一个表达式用到了多个属性(多层表达式)
 	depIds: {} 用来保存所有相关的dep(用dep的id作为属性名, dep作为属性值)
+
 # MVVM原理图分析
 ![mvvm原理图](https://i.imgur.com/5z0QpWi.jpg)
+
 # 双向数据绑定
 * 1)双向数据绑定是建立在单向数据绑定(model==>View)的基础之上的
 * 2)双向数据绑定的实现流程:
